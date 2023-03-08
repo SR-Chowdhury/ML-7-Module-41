@@ -18,7 +18,7 @@ const showProducts = (products) => {
 
    document.getElementById("all-products").innerHTML = "";
 
-   const allProducts = products.slice(0, 10).map((pd) => pd);
+   const allProducts = products.map((pd) => pd);
    for (const product of allProducts) {
       const image = product.image;
       const div = document.createElement('div');
@@ -54,7 +54,6 @@ const addToCart = (id, price) => {
 };
 
 const showProductDetails = (product_id) => {
-   console.log(product_id);
    fetch(`https://fakestoreapi.com/products/${product_id}`)
       .then((res) => res.json())
       .then((data) => showProductDetailsInModal(data));
@@ -69,44 +68,41 @@ const showProductDetailsInModal = (product_details) => {
 
 const getInputValue = (id) => {
    const element = document.getElementById(id).innerText;
-   const converted = parseInt(element);
+   const converted = parseFloat(element);
    return converted;
 };
 
 // main price update function
 const updatePrice = (id, value) => {
    const convertedOldPrice = getInputValue(id);
-   const convertPrice = parseInt(convertedOldPrice);
+   const convertPrice = parseFloat(convertedOldPrice);
    const total = convertPrice + value;
-   document.getElementById(id).innerText = Math.round(total);
+   document.getElementById(id).innerText = total.toFixed(2);
 };
 
 // set innerText function
 const setInnerText = (id, value) => {
-   if(isNaN(value)) {
-      document.getElementById(id).innerText = value;
-   } else {
-      document.getElementById(id).innerText = Math.round(value);
-   }
+      document.getElementById(id).innerText =value;
 };
 
 // update delivery charge and total Tax
 const updateTaxAndCharge = () => {
    const priceConverted = getInputValue('price');
-   const x = priceConverted * 0.2;
+   const x = (priceConverted * 0.2).toFixed(2);
 
-   if (priceConverted > 200) {
-      setInnerText('delivery-charge', 30);
-      setInnerText('total-tax', x);
-   }
-   if (priceConverted > 400) {
-      setInnerText('delivery-charge', 50);
-      setInnerText('total-tax', x);
-   }
    if (priceConverted > 500) {
       setInnerText('delivery-charge', 60);
       setInnerText('total-tax', x);
    }
+   else if (priceConverted > 400) {
+      setInnerText('delivery-charge', 50);
+      setInnerText('total-tax', x);
+   }
+   else if (priceConverted > 200) {
+      setInnerText('delivery-charge', 30);
+      setInnerText('total-tax', x);
+   }
+
 };
 
 //grandTotal update function
@@ -115,14 +111,14 @@ const updateTotal = () => {
       getInputValue('price') +
       getInputValue('delivery-charge') +
       getInputValue('total-tax');
-   document.getElementById('total').innerText = grandTotal;
+   document.getElementById('total').innerText = grandTotal.toFixed(2);
 };
 
 // search by category
 document.getElementById("search-btn").addEventListener("click", function () {
-   const inputField = document.getElementById("input-value").value;
+   const inputField = document.getElementById("input-value").value.toLowerCase();
    const searchedProduct = arr[0].filter((p) =>
-      p.category.startsWith(`${inputField}`)
+      p.title.toLowerCase().includes(`${inputField}`)
    );
    showProducts(searchedProduct);
 
